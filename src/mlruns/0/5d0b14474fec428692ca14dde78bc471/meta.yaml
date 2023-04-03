@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Github/Federated_Learning/Retinal_OCT/src/mlruns/0/5d0b14474fec428692ca14dde78bc471/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5d0b14474fec428692ca14dde78bc471
+run_name: exultant-wasp-148
+run_uuid: 5d0b14474fec428692ca14dde78bc471
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1680545848707
+status: 1
+tags: []
+user_id: Yikes

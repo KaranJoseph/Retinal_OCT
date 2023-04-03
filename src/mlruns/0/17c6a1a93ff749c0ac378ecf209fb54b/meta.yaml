@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Github/Federated_Learning/Retinal_OCT/src/mlruns/0/17c6a1a93ff749c0ac378ecf209fb54b/artifacts
+end_time: 1680545848668
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 17c6a1a93ff749c0ac378ecf209fb54b
+run_name: bustling-crane-255
+run_uuid: 17c6a1a93ff749c0ac378ecf209fb54b
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1680535345586
+status: 3
+tags: []
+user_id: Yikes

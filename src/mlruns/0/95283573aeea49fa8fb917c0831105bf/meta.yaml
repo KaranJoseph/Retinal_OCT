@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Github/Federated_Learning/Retinal_OCT/src/mlruns/0/95283573aeea49fa8fb917c0831105bf/artifacts
+end_time: 1680535345530
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 95283573aeea49fa8fb917c0831105bf
+run_name: righteous-fly-802
+run_uuid: 95283573aeea49fa8fb917c0831105bf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1680527184852
+status: 3
+tags: []
+user_id: Yikes

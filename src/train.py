@@ -100,11 +100,12 @@ def search_space(trial):
     Optimizer is kept as SGD to reduce training time
     """
     lr = trial.suggest_float("lr", 1e-4, 1e-1, log=True)
-    dropout = trial.suggest_float("dropout", 0.0, 0.9, step=0.1)
+    dropout = trial.suggest_float("dropout", 0.0, 0.6, step=0.1)
     optimizer_name = trial.suggest_categorical("optimizer_name", ["SGD"])
+    momentum = trial.suggest_float("momentum", 0.81, 0.99, step=0.03)
 
     logger.info(f"Suggested hyperparameters: \n{pformat(trial.params)}")
-    return lr, dropout, optimizer_name
+    return lr, dropout, optimizer_name, momentum
 
 def retina_dataloaders(batch_size=32):
     """
@@ -150,7 +151,7 @@ def objective(trial):
     
     with mlflow.start_run() as run:
         logger.info("Active Run ID: %s\n" % (run.info.run_uuid))
-        lr, dropout, optimizer_name = search_space(trial)
+        lr, dropout, optimizer_name, momentum = search_space(trial)
         mlflow.log_params(trial.params)
 
         # Use CUDA if GPU is available and log device as param using mlflow
@@ -166,7 +167,7 @@ def objective(trial):
         if optimizer_name == "Adadelta":
             optimizer = optim.Adadelta(model.parameters(), lr=lr)
         if optimizer_name == 'SGD':
-            optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
+            optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
         scheduler = StepLR(optimizer, step_size=1, gamma=0.7)
         
         train_loader, val_loader, _ = retina_dataloaders(batch_size)
@@ -182,10 +183,16 @@ def objective(trial):
             mlflow.log_metric("avg_train_losses", avg_train_loss, step=epoch)
             mlflow.log_metric("avg_val_loss", avg_val_loss, step=epoch)
             
+            #Add optuna trial pruning based on val_loss
+            trial.report(avg_val_loss, epoch)
+            # Handle pruning based on the intermediate value.
+            if trial.should_prune():
+                raise optuna.TrialPruned()
+
             # Add custom early stopping
             early_stopping = EarlyStopping()
             early_stopping(avg_val_loss)
-            if early_stopping.early_stop():
+            if early_stopping.early_stop:
                 break
             scheduler.step()
 
@@ -195,8 +202,8 @@ def objective(trial):
 
 def main():
     start_time = time.time()
-    study = optuna.create_study(study_name="retina_ocl-mlflow-optuna", direction="minimize")
-    study.optimize(objective, n_trials=5)
+    study = optuna.create_study(study_name="retina_ocl-mlflow-optuna", direction="minimize", pruner=optuna.pruners.MedianPruner())
+    study.optimize(objective, n_trials=10)
 
     # Log the trial results
     logger.info("\n++++++++++++++++++++++++++++++++++\n")
