@@ -1,34 +1,11 @@
-"""
-This script contains the training code for Retinal OCT dataset using PyTorch
-Optuna - hyperparameter optimization
-mlflow - experiment tracking
-
-**Purpose of the script is to build a baseline model after a moderate search space exploration**
-
-Future improvements:
-    - Add model save and load features with optuna -> helps save weights and models
-    - Connect optuna to SQL (MySQL/Postgres) to pause, save, and resume trials
-    - Parallel/distributed training by connecting optuna to SQL db
-    - Look into how optuna can be used with pytorch/tensorflow to modify model architecture
-    - explore mflow projects and mlflow models for ease of deployment and serving
-
-Reference:
- - https://debuggercafe.com/using-learning-rate-scheduler-and-early-stopping-with-pytorch/
- - https://github.com/StefanieStoppel/pytorch-mlflow-optuna/blob/tutorial-basics/mlflow-optuna-pytorch.ipynb
- - https://optuna.readthedocs.io/en/v2.0.0/tutorial/pruning.html#activating-pruners
- - https://medium.com/analytics-vidhya/predict-retinal-disease-with-cnn-retinal-oct-images-dataset-6df09cb50206
- - https://www.cs.toronto.edu/~lczhang/360/lec/w04/convnet.html
- - https://github.com/optuna/optuna-examples/blob/main/kubernetes/mlflow/pytorch_lightning_distributed.py
-"""
-
-
-
 from __future__ import print_function
 import mlflow
 import os
 import tempfile
 import torch
 import optuna
+from optuna.integration.mlflow import MLflowCallback #Can use this instead of the existing architecture
+#https://optuna.readthedocs.io/en/stable/reference/generated/optuna.integration.MLflowCallback.html
 
 import torch.nn as nn
 import torch.nn.functional as F
@@ -43,6 +20,8 @@ from pprint import pformat
 from logger import set_logger
 import time
 from utils import EarlyStopping
+
+import pickle
 
 
 import os
@@ -229,6 +208,8 @@ def objective(trial):
             if early_stopping.early_stop:
                 break
             scheduler.step()
+    with open("models\{}.pickle".format(trial.number), "wb") as fout:
+        pickle.dump(model, fout)
 
     logger.info(f'Trial Complete at epoch {epoch}')
     logger.info(f'--------------{(time.time()-start_time)/60:.3f} minutes------------')
@@ -236,8 +217,10 @@ def objective(trial):
 
 def main():
     start_time = time.time()
-    study = optuna.create_study(study_name="retina_ocl-mlflow-optuna", direction="minimize", pruner=optuna.pruners.MedianPruner())
-    study.optimize(objective, n_trials=10)
+    study = optuna.create_study(study_name="retina_ocl-mlflow-optuna",
+                                direction="minimize",
+                                pruner=optuna.pruners.MedianPruner())
+    study.optimize(objective, n_trials=10, timeout=14400)
 
     # Log the trial results
     logger.info("\n++++++++++++++++++++++++++++++++++\n")
@@ -259,3 +242,11 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+"""
+To load pickled model
+with open("{}.pickle".format(study.best_trial.number), "rb") as fin:
+    best_clf = pickle.load(fin)
+
+"""

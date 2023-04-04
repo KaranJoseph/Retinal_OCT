@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Github/Federated_Learning/Retinal_OCT/src/mlruns/0/719f655005724fcba30fb9c892ca90ad/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 719f655005724fcba30fb9c892ca90ad
+run_name: angry-mole-751
+run_uuid: 719f655005724fcba30fb9c892ca90ad
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1680583018890
+status: 1
+tags: []
+user_id: Yikes

@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Github/Federated_Learning/Retinal_OCT/src/mlruns/0/2399b7385c4442f292f41e35126035fb/artifacts
+end_time: 1680567650463
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 2399b7385c4442f292f41e35126035fb
+run_name: magnificent-stoat-97
+run_uuid: 2399b7385c4442f292f41e35126035fb
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1680557371431
+status: 3
+tags: []
+user_id: Yikes

@@ -1,0 +1,16 @@
+artifact_uri: file:///D:/Github/Federated_Learning/Retinal_OCT/src/mlruns/0/44eccec804774f749971b05dfcc30ccd/artifacts
+deleted_time: 1680620292760
+end_time: 1680583018829
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: deleted
+run_id: 44eccec804774f749971b05dfcc30ccd
+run_name: lyrical-sheep-971
+run_uuid: 44eccec804774f749971b05dfcc30ccd
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1680581371366
+status: 4
+tags: []
+user_id: Yikes
