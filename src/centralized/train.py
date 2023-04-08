@@ -51,11 +51,6 @@ batch_size = 32
 input_size = 32
 num_classes = 4
 
-# Set Mlflow experiment name
-experiment_name = f"Retinal Experiment"
-experiment_id = mlflow.create_experiment(experiment_name)
-tracking_uri = mlflow.get_tracking_uri()
-
 ## Setup logger
 logger = set_logger()
 
@@ -258,4 +253,8 @@ def main():
 
 
 if __name__ == '__main__':
+    # Set Mlflow experiment name
+    experiment_name = f"Retinal Experiment"
+    experiment_id = mlflow.create_experiment(experiment_name)
+    tracking_uri = mlflow.get_tracking_uri()
     main()
