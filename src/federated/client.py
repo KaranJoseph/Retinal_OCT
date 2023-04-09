@@ -24,7 +24,7 @@ class FlowerClient(fl.client.NumPyClient):
         return float(loss), len(self.valloader), {"accuracy": float(accuracy)}
 
 def client_fn(cid) -> FlowerClient:
-    net = Retina_Model().to(DEVICE)
+    net = Retina_Model(DROPOUT, 4).to(DEVICE)
     trainloader = trainloaders[int(cid)]
-    valloader = valloaders[int(cid)]
+    # valloader = valloader
     return FlowerClient(cid, net, trainloader, valloader)

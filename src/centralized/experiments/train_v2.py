@@ -239,7 +239,6 @@ def main():
     
     logger.info(f"Experiment total time: {(time.time()-start_time)/60:.3f} minutes")
 
-
 if __name__ == '__main__':
     main()
 

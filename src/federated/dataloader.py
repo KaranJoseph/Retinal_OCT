@@ -34,18 +34,12 @@ def load_data(num_clients):
     train_partition_size = len(trainset) // num_clients
     train_lengths = [train_partition_size] * num_clients
     train_lengths[-1] = train_lengths[-1] + (len(trainset)-sum(train_lengths))
-    val_partition_size = len(valset) // num_clients
-    val_lengths = [val_partition_size] * num_clients
-    val_lengths[-1] = val_lengths[-1] + (len(valset)-sum(val_lengths))
-
     train_dataset = random_split(trainset, train_lengths, torch.Generator().manual_seed(42))
-    val_dataset = random_split(valset, val_lengths, torch.Generator().manual_seed(42))
 
     # Split each partition into train/val and create DataLoader
     trainloaders = []
-    valloaders = []
-    for train_ds, val_ds in zip(train_dataset, val_dataset):
+    for train_ds in train_dataset:
         trainloaders.append(DataLoader(train_ds, batch_size=32, shuffle=True))
-        valloaders.append(DataLoader(val_ds, batch_size=32))
+    valloader = DataLoader(valset, batch_size=32)
     testloader = DataLoader(testset, batch_size=32)
-    return trainloaders, valloaders, testloader
+    return trainloaders, valloader, testloader

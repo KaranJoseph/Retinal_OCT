@@ -26,7 +26,7 @@ Reference:
 from __future__ import print_function
 import mlflow
 import os
-import tempfile
+import pickle
 import torch
 import optuna
 
@@ -46,17 +46,9 @@ from utils import EarlyStopping
 
 
 import os
-data_dir = 'D:\Github\Federated_Learning\Experiments\RetinalOCT\Data' # Change data directory here to replicate code
-batch_size = 32
-input_size = 32
-num_classes = 4
-
-## Setup logger
-logger = set_logger()
-
 
 class Retina_Model(nn.Module):
-    def __init__(self, dropout=0.0):
+    def __init__(self, dropout=0.0, num_classes=4):
         super(Retina_Model, self).__init__()
         self.conv1 = nn.Conv2d(3, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
@@ -93,8 +85,12 @@ def train(model, device, train_loader, optimizer, epoch):
         optimizer.step()
         if batch_idx % 10 == 0:
             batch_size = len(data)
-            logger.info(f"Train Epoch: {epoch} [{batch_idx * batch_size}/{train_set_size}"
-                        f"({100. * batch_idx / num_batches:.0f}%)]\tLoss: {loss.item():.6f}") #Monitor status of training 
+            try:
+                logger.info(f"Train Epoch: {epoch} [{batch_idx * batch_size}/{train_set_size}"
+                            f"({100. * batch_idx / num_batches:.0f}%)]\tLoss: {loss.item():.6f}") #Monitor status of training 
+            except:
+                print(f"Train Epoch: {epoch} [{batch_idx * batch_size}/{train_set_size}"
+                            f"({100. * batch_idx / num_batches:.0f}%)]\tLoss: {loss.item():.6f}") #Monitor status of training 
     avg_train_loss = train_loss / num_batches
     return avg_train_loss
 
@@ -113,9 +109,12 @@ def validate(model, device, val_loader):
             correct += pred.eq(label.view_as(pred)).sum().item()
 
     val_loss /= val_set_size
-
-    logger.info(f"Test set: Average loss: {val_loss:.4f}, Accuracy: {correct}/{val_set_size} "
-                f"({100. * correct / val_set_size:.0f}%)\n")
+    try:
+        logger.info(f"Test set: Average loss: {val_loss:.4f}, Accuracy: {correct}/{val_set_size} "
+                    f"({100. * correct / val_set_size:.0f}%)\n")
+    except:
+        print(f"Test set: Average loss: {val_loss:.4f}, Accuracy: {correct}/{val_set_size} "
+            f"({100. * correct / val_set_size:.0f}%)\n")
     return val_loss
 
 
@@ -132,7 +131,7 @@ def search_space(trial):
     logger.info(f"Suggested hyperparameters: \n{pformat(trial.params)}")
     return lr, dropout, optimizer_name, momentum
 
-def retina_dataloaders(batch_size=32):
+def retina_dataloaders(batch_size, input_size, data_dir):
     """
     load train, validation and test sets from data_dir 
     perform transformations to augment train data and reduce size for faster training
@@ -145,7 +144,7 @@ def retina_dataloaders(batch_size=32):
         # transforms.Grayscale(num_output_channels=1),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        transforms.Normalize((0.1934,),(0.2200,))] # Calculated mean and std of the train image dataset
+        transforms.Normalize((0.1928,),(0.2022,))] # Calculated mean and std of the train image dataset
     )
     
     # First experiment was run with normalization set to (0.1934,),(0.2200,) -> resize = 500
@@ -156,7 +155,7 @@ def retina_dataloaders(batch_size=32):
         [transforms.Resize(size=(input_size, input_size)),
         # transforms.Grayscale(num_output_channels=1),
         transforms.ToTensor(),
-        transforms.Normalize((0.1934,),(0.2200,))] # Calculated mean and std of the train image dataset
+        transforms.Normalize((0.1928,),(0.2022,))] # Calculated mean and std of the train image dataset
     )
 
 
@@ -199,7 +198,7 @@ def objective(trial):
             optimizer = optim.SGD(model.parameters(), lr=lr, momentum=momentum)
         scheduler = StepLR(optimizer, step_size=1, gamma=0.7)
         
-        train_loader, val_loader, _ = retina_dataloaders(batch_size)
+        train_loader, val_loader, _ = retina_dataloaders(batch_size, input_size, data_dir)
         
         # Train and validation loop -> Choosing 5 epochs to reduce training time
         for epoch in range(0, 10):
@@ -225,6 +224,9 @@ def objective(trial):
                 break
             scheduler.step()
 
+    with open("models\{}.pickle".format(trial.number), "wb") as fout:
+        pickle.dump(model, fout)
+
     logger.info(f'Trial Complete at epoch {epoch}')
     logger.info(f'--------------{(time.time()-start_time)/60:.3f} minutes------------')
     return best_val_loss
@@ -232,7 +234,7 @@ def objective(trial):
 def main():
     start_time = time.time()
     study = optuna.create_study(study_name="retina_ocl-mlflow-optuna", direction="minimize", pruner=optuna.pruners.MedianPruner())
-    study.optimize(objective, n_trials=10)
+    study.optimize(objective, n_trials=20)
 
     # Log the trial results
     logger.info("\n++++++++++++++++++++++++++++++++++\n")
@@ -254,7 +256,17 @@ def main():
 
 if __name__ == '__main__':
     # Set Mlflow experiment name
-    experiment_name = f"Retinal Experiment"
+    experiment_name = f"Retinal Experiment Sampled"
     experiment_id = mlflow.create_experiment(experiment_name)
     tracking_uri = mlflow.get_tracking_uri()
+
+    data_dir = 'D:\Github\Federated_Learning\Experiments\RetinalOCT\Data' # Change data directory here to replicate code
+    # data_dir = 'D:\Github\Federated_Learning\Retinal_OCT\data'
+    batch_size = 32
+    input_size = 32
+    num_classes = 4
+
+    ## Setup logger
+    logger = set_logger()
+
     main()

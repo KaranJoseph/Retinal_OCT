@@ -1,0 +1,15 @@
+artifact_uri: file:///D:/Github/Federated_Learning/Retinal_OCT/src/centralized/mlruns/680659152618383539/32989a25ab1d4404b601109bd753a6a8/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '680659152618383539'
+lifecycle_stage: active
+run_id: 32989a25ab1d4404b601109bd753a6a8
+run_name: big-jay-887
+run_uuid: 32989a25ab1d4404b601109bd753a6a8
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1681002043627
+status: 1
+tags: []
+user_id: Yikes

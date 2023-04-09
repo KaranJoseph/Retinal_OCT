@@ -17,9 +17,9 @@ MOMENTUM = 0.9
 LR =  0.0313425891625895
 DROPOUT = 0.2
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-model = Retina_Model().to(DEVICE) #Load base model from centralized model
+model = Retina_Model(DROPOUT, 4).to(DEVICE) #Load base model from centralized model
 
-trainloaders, valloaders, testloader = load_data(NUM_CLIENTS)
+trainloaders, valloader, testloader = load_data(NUM_CLIENTS)
 print(
     f"Training on {DEVICE} using PyTorch {torch.__version__} and Flower {fl.__version__}"
 )
@@ -70,6 +70,7 @@ def test(model, testloader):
             correct += (predicted == labels).sum().item()
     loss /= len(testloader.dataset)
     accuracy = correct / total
+    print(f"Test loss: {loss}, accuracy: {accuracy}")
     return loss, accuracy
 
 
