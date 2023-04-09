@@ -18,13 +18,13 @@ def load_data(num_clients):
          transforms.RandomAdjustSharpness(sharpness_factor=2),
          transforms.RandomHorizontalFlip(),
          transforms.ToTensor(),
-         transforms.Normalize((0.1934,),(0.2200,))]
+         transforms.Normalize((0.1928,),(0.2022,))]
     )
 
     test_transform = transforms.Compose(
         [transforms.Resize(size=(input_size, input_size)),
         transforms.ToTensor(),
-        transforms.Normalize((0.1934,),(0.2200,))])
+        transforms.Normalize((0.1928,),(0.2022,))])
     
     trainset = datasets.ImageFolder(os.path.join(data_dir, 'train'), transform=train_transform)
     valset = datasets.ImageFolder(os.path.join(data_dir, 'val'), transform=test_transform)

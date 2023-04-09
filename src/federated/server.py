@@ -25,8 +25,6 @@ params = get_parameters(Retina_Model())
 
 #Create a custom strategy on top of fedavg to save pytorch model
 class SaveModelStrategy(fl.server.strategy.FedAvg):
-    PATH = 'D:\Github\Federated_Learning\Retinal_OCT\src\models\federated'
-    model = Retina_Model(DROPOUT, 4).to(DEVICE)
     def aggregate_fit(
         self,
         server_round: int,
@@ -34,6 +32,9 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
         failures: List[Union[Tuple[ClientProxy, FitRes], BaseException]],
     ):
         """Aggregate model weights using weighted average and store checkpoint"""
+        
+        PATH = 'D:\Github\Federated_Learning\Retinal_OCT\src\models\\federated'
+        model = Retina_Model(DROPOUT, 4).to(DEVICE)
 
         # Call aggregate_fit from base class (FedAvg) to aggregate parameters and metrics
         aggregated_parameters, aggregated_metrics = super().aggregate_fit(server_round, results, failures)
@@ -50,7 +51,7 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
             model.load_state_dict(state_dict, strict=True)
 
             # Save the model
-            torch.save(model.state_dict(), f"model_round_{server_round}.pth")
+            torch.save(model.state_dict(), f"{PATH}\model_round_{server_round}.pth")
 
         return aggregated_parameters, aggregated_metrics
 
@@ -58,11 +59,11 @@ class SaveModelStrategy(fl.server.strategy.FedAvg):
 # Pass parameters to the Strategy for server-side parameter initialization
 strategy = SaveModelStrategy(
     fraction_fit=0.3,
-    fraction_evaluate=0.3,
+    fraction_evaluate=0,
     min_fit_clients=3,
     min_evaluate_clients=3,
     min_available_clients=NUM_CLIENTS,
-    # initial_parameters=fl.common.ndarrays_to_parameters(params),
+    # initial_parameters=fl.common.ndarrays_to_parameters(params), #Use this if we want to start with a specific model parameters
     evaluate_fn=evaluate, #
 )
 
@@ -75,7 +76,7 @@ if DEVICE.type == "cuda":
 fl.simulation.start_simulation(
     client_fn=client_fn,
     num_clients=NUM_CLIENTS,
-    config=fl.server.ServerConfig(num_rounds=3),  # Just three rounds
+    config=fl.server.ServerConfig(num_rounds=10),  # Change here for num of rounds
     strategy=strategy,
     client_resources=client_resources,
 )

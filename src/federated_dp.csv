@@ -1,0 +1,8 @@
+,precision,recall,f1-score,support
+CNV,0.25,1.0,0.4,242.0
+DME,0.0,0.0,0.0,242.0
+DRUSEN,0.0,0.0,0.0,242.0
+NORMAL,0.0,0.0,0.0,242.0
+accuracy,0.25,0.25,0.25,0.25
+macro avg,0.0625,0.25,0.1,968.0
+weighted avg,0.0625,0.25,0.1,968.0
