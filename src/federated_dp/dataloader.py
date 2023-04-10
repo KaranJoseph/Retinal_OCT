@@ -10,8 +10,8 @@ input_size = 32
 num_classes = 4
 
 # Define privacy budget and sensitivity
-epsilon = 0.5
-sensitivity = 1.0
+epsilon = 2
+sensitivity = 1
 # Compute scale parameter for Laplace distribution
 scale = sensitivity / epsilon
 

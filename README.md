@@ -13,4 +13,4 @@ CNN Framework with extensive hyperparamter optimization using optuna and model t
 - src:
     - 3 folders centralized, federated, and federated_dp holds the codes corresponding to the 3 approaches
     - models - final model parameters
-- run predict.py <approach> to evaluate on test data
+- run **predict.py** to evaluate on test data
