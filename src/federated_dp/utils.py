@@ -22,8 +22,8 @@ train_transforms = transforms.Compose(
         transforms.RandomAdjustSharpness(sharpness_factor=2),
         # transforms.Grayscale(num_output_channels=1),
         transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize((0.1928,),(0.2022,))] # Calculated mean and std of the train image dataset
+        transforms.ToTensor()]
+        # transforms.Normalize((0.1928,),(0.2022,))] # Calculated mean and std of the train image dataset
     )
 train_dataset = datasets.ImageFolder(os.path.join(data_dir, 'train'), transform=train_transforms)
 
@@ -34,7 +34,7 @@ def compute_sensitivity(dataset, model):
         output = model(inputs)
         loss = output.max(1)[0].sum()
         loss.backward()
-        norm = torch.abs(inputs.grad.data).max()
+        norm = torch.abs(inputs.grad.data).max()/(input_size*input_size)
         if norm > max_norm:
             max_norm = norm
     return max_norm.item()

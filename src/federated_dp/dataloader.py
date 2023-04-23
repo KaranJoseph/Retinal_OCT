@@ -10,8 +10,8 @@ input_size = 32
 num_classes = 4
 
 # Define privacy budget and sensitivity
-epsilon = 2
-sensitivity = 0.05
+epsilon = 0.2
+sensitivity = 0.0054444544948637486 #Calculated from train set using Retina_Model -> utils.py
 # Compute scale parameter for Laplace distribution
 scale = sensitivity / epsilon
 
